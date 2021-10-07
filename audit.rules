@@ -1,0 +1,161 @@
+-D
+
+-b 8192
+
+-f 1
+
+-i
+
+-w /var/log/audit/ -k audit_log
+
+-w /etc/audit/ -p wa -k audit_konfigurasyon
+-w /etc/libaudit.conf -p wa -k audit_konfigurasyon
+-w /etc/audisp/ -p wa -k audit_konfigurasyon
+
+-w /sbin/auditctl -p x -k audit_calistirma
+-w /sbin/auditd -p x -k audit_calistirma
+-w /usr/sbin/augenrules -p x -k audit_calistirma
+
+#Bilgi Toplama
+-w /usr/bin/whoami -p x -k whoami_calistirma
+-w /usr/bin/id -p x -k id_calistirma
+-w /bin/hostname -p x -k hostname_calistirma
+-w /bin/uname -p x -k uname_calistirma
+-w /etc/hostname -p r -k hostname_okuma
+-w /sbin/ifconfig -p x -k ifconfig_kullanimi
+-w /sbin/iptables -p x -k iptables_kullanimi
+-w /usr/bin/ps -p x -k ps_kullanimi
+-w /usr/bin/find -p x -k find_kullanimi
+-w /usr/bin/grep -p x -k grep_kullanimi
+-w /usr/bin/egrep -p x -k egrep_kullanimi
+-w /usr/bin/wireshark -p x -k wireshark_kullanimi
+-w /usr/sbin/tcpdump -p x -k tcpdump_kullanimi
+-w /usr/sbin/traceroute -p x -k traceroute_kullanimi
+-w /etc/ssh/sshd_config -p rwa -k ssh_konfigurasyon_islem
+-w /etc/ssh/sshd_config.d -p rwa -k ssh_konfigurasyon_islem
+
+#Şüpheli İşlemler
+-w /usr/bin/base64 -p x -k base64_islem
+-w /bin/nc -p x -k nc_kullanimi
+-w /bin/netcat -p x -k netcat_kullanimi
+-w /usr/bin/ncat -p x -k ncat_kullanimi
+-w /usr/bin/scp -p x -k scp_kullanimi
+-w /usr/bin/sftp -p x -k sftp_kullanimi
+-w /usr/bin/ftp -p x -k ftp_kullanimi
+-w /usr/bin/socat -p x -k socat_kullanimi
+-w /usr/bin/rdesktop -p x -k rdesktop_kullamimi
+-w /usr/bin/nmap -p x -k nmap_kullanimi
+-w /bin/ash -p x -k ash_shell_kullanimi
+-w /bin/bash -p x -k bash_shell_kullanimi
+-w /bin/csh -p x -k csh_shell_kullanimi
+-w /bin/dash -p x -k dash_shell_kullanimi
+-w /bin/ksh -p x -k ksh_shell_kullanimi
+-w /bin/zsh -p x -k zsh_shell_kullanimi
+-a always,exit -F arch=b32 -S ptrace -F a0=0x4 -k code_injection
+-a always,exit -F arch=b64 -S ptrace -F a0=0x4 -k code_injection
+-a always,exit -F arch=b32 -S ptrace -F a0=0x5 -k data_injection
+-a always,exit -F arch=b64 -S ptrace -F a0=0x5 -k data_injection
+-a always,exit -F arch=b32 -S ptrace -F a0=0x6 -k register_injection
+-a always,exit -F arch=b64 -S ptrace -F a0=0x6 -k register_injection
+-a always,exit -F arch=b32 -S ptrace -k tracing
+-a always,exit -F arch=b64 -S ptrace -k tracing
+
+#Yetki Yükseltme
+-w /bin/su -p x -k su_komutu_ile_yetki_yukseltme_olabilir
+-w /usr/bin/sudo -p x -k sudo_komutu_ile_yetki_yukseltme_olabilir
+-w /etc/sudoers -p rwa -k sudoers_dosyasi_ile_yetki_yukseltme_olabilir
+-w /etc/sudoers.d/ -p wa -k sudoers_dosyasi_konf_ile_yetki_yukseltme_olabilir
+-w /usr/bin/gcc -p x -k gcc_kullanimi__sudo_Environment_Variables_veya_sistem_bazli_yetki_yukseltme_olabilir
+-w /usr/bin/touch -p x -k wildcard_cronjobs_olabilir__cronjobs_ile_wildcard_kullanimi_ile_yetki_yukseltme_olabilir
+-w /usr/bin/strace -p x -k shared_object_injection__shared_object_injection_ile_yetki_yukseltme_olabilir
+-w /usr/bin/env -p x -k env_kullanimi__PS4_ortam_degiskeni_ile_yetki_yukseltme_olabilir
+-w /etc/openvpn/auth.txt -p r -k openvpn_auth_dosyasi_okundu__Elde_edilen_kullanici_adi_ve_parola_ile_yetki_yukseltme_olabilir
+
+#Tünelleme
+-w /usr/bin/proxychains -p x -k proxychains_kullanimi
+-w /usr/bin/ssh -p x -k ssh_kullanimi_veya_tunelleme_olabilir
+-w /usr/sbin/stunnel -p x -k stunnel_islem
+-w /usr/bin/stunnel -p x -k stunnel_islem
+
+#Dosya İşlemleri
+-w /usr/bin/wget -p x -k muhtemel_dosya_indirme
+-w /usr/bin/curl -p x -k muhtemel_dosya_indirme
+-a always,exit -F arch=b64 -S open -F dir=/etc -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b64 -S open -F dir=/bin -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b64 -S open -F dir=/sbin -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b64 -S open -F dir=/usr/bin -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b64 -S open -F dir=/usr/sbin -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b64 -S open -F dir=/var -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b64 -S open -F dir=/home -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b64 -S open -F dir=/srv -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b32 -S open -F dir=/etc -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b32 -S open -F dir=/bin -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b32 -S open -F dir=/sbin -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b32 -S open -F dir=/usr/bin -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b32 -S open -F dir=/usr/sbin -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b32 -S open -F dir=/var -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b32 -S open -F dir=/home -F success=0 -k yetkisiz_erisim_denemesi
+-a always,exit -F arch=b32 -S open -F dir=/srv -F success=0 -k yetkisiz_erisim_denemesi
+-w /usr/bin/cp -p x -k kopyalama_islemi
+-w /usr/bin/dd -p x -k dd_kullanimi
+
+#Sistemde İşlem
+-w /usr/bin/rpm -p x -k rpm_kullanma
+-w /usr/bin/yum -p x -k yum_kullanma
+-w /usr/bin/dnf -p x -k dnf_kullanma
+-w /usr/bin/dpkg -p x -k dpkg_kullanma
+-w /usr/bin/apt -p x -k apt_kullanma
+-w /usr/bin/apt-add-repository -p x -k apt-add-repository_kullanma
+-w /usr/bin/apt-get -p x -k apt-get_kullanma
+-w /usr/bin/aptitude -p x -k aptitude_kullanma
+-w /usr/bin/snap -p x -k snap_kullanma
+-w /usr/bin/pip -p x -k pip_kullanma
+-w /usr/bin/pip3 -p x -k pip3_kullanma
+-w /usr/bin/dockerd -k docker_islem
+-w /usr/bin/docker -k docker_islem
+-w /usr/bin/docker-containerd -k docker_islem
+-w /usr/bin/docker-runc -k docker_islem
+-a always,exit -F arch=b32 -S sethostname -S setdomainname -k ag_islem
+-a always,exit -F arch=b64 -S sethostname -S setdomainname -k ag_islem
+-a always,exit -F arch=b64 -S connect -F a2=16 -F success=1 -F key=ipv4_baglanti
+-a always,exit -F arch=b32 -S connect -F a2=16 -F success=1 -F key=ipv4_baglanti
+-a always,exit -F arch=b64 -S connect -F a2=28 -F success=1 -F key=ipv6_baglanti
+-a always,exit -F arch=b32 -S connect -F a2=28 -F success=1 -F key=ipv6_baglanti
+-w /etc/hosts -p wa -k hosts_dosyasi_degisiklik
+-w /etc/sysconfig/network -p wa -k ag_konfigurasyon_degisisklik
+-w /etc/sysconfig/network-scripts -p w -k ag_konfigurasyon_degisisklik
+-w /etc/inittab -p wa -k baslangic_scripti_degisti
+-w /etc/init.d/ -p wa -k baslangic_scripti_degisti
+-w /etc/init/ -p wa -k baslangic_scripti_degisti
+-w /etc/pam.d/ -p wa -k pam_islem
+-w /etc/security/limits.conf -p wa  -k pam_islem
+-w /etc/security/limits.d -p wa  -k pam_islem
+-w /etc/security/pam_env.conf -p wa -k pam_islem
+-w /etc/security/namespace.conf -p wa -k pam_islem
+-w /etc/security/namespace.d -p wa -k pam_islem
+-w /etc/security/namespace.init -p wa -k pam_islem
+-w /bin/systemctl -p x -k servis_islem
+-w /etc/systemd/ -p wa -k servis_islem
+-w /sbin/shutdown -p x -k makine_kapatma
+-w /sbin/reboot -p x -k yeniden_baslatma
+-w /etc/cron.allow -p wa -k cron_islem
+-w /etc/cron.deny -p wa -k cron_islem
+-w /etc/cron.d/ -p wa -k cron_islem
+-w /etc/cron.daily/ -p wa -k cron_islem
+-w /etc/cron.hourly/ -p wa -k cron_islem
+-w /etc/cron.monthly/ -p wa -k cron_islem
+-w /etc/cron.weekly/ -p wa -k cron_islem
+-w /etc/crontab -p wa -k cron_islem
+-w /var/spool/cron/ -k cron_islem
+-w /etc/group -p wa -k group_degisiklik
+-w /etc/passwd -p wa -k passwd_degisiklik
+-w /etc/gshadow -p wa -k group_degisiklik
+-w /etc/shadow -p wa -k passwd_degisiklik
+-w /usr/bin/passwd -p x -k passwd_degisiklik
+-w /usr/sbin/groupadd -p x -k grup_ekleme
+-w /usr/sbin/groupmod -p x -k grup_mod_degisimi
+-w /usr/sbin/addgroup -p x -k grup_ekleme
+-w /usr/sbin/useradd -p x -k kullanici_ekleme
+-w /usr/sbin/userdel -p x -k kullanici_silme
+-w /usr/sbin/usermod -p x -k kullanici_mod_degisimi
+-w /usr/sbin/adduser -p x -k kullanici_ekleme
